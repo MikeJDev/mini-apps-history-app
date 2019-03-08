@@ -8,7 +8,8 @@
     "start": "webpack-dev-server  --open --color ",
     "build": "rimraf dist &&  webpack --progress --profile",
     "server": "nodemon server/server.js",
-    "server-prod": "node server/server.js"
+    "server-prod": "node server/server.js",
+    "json-server": "json-server --watch db.json"
   },
   "repository": {
     "type": "git",
