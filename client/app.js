@@ -7,14 +7,16 @@ class App extends React.Component {
     super(props);
     this.state = {
       events: [],
-      value: ""
+      value: "",
+      currentPage: 0
     };
     this.handleSearchChange = this.handleSearchChange.bind(this);
+    this.handlePageClick = this.handlePageClick.bind(this);
   }
 
   componentDidMount() {
     axios
-      .get("http://localhost:3000/events?_page=1")
+      .get("/events?_page=0")
       .then(response => {
         let data = response.data.map((event, index) => {
           return (
@@ -35,7 +37,7 @@ class App extends React.Component {
     let data = this.state.value;
     event.preventDefault();
     axios
-      .get(`http://localhost:3000/events?q=${data}`)
+      .get(`/events?q=${data}&_page=${this.state.currentPage.selected}`)
       .then(response => {
         let searchedData = response.data.map((event, index) => {
           return (
@@ -52,8 +54,22 @@ class App extends React.Component {
         console.log("err:", err);
       });
   }
+
   handleSearchChange(e) {
     this.setState({ value: e.target.value });
+  }
+
+  handlePageClick(arg) {
+    console.log(arg);
+    this.setState({
+      currentPage: arg
+    });
+  }
+
+  componentDidUpdate(prevProp, prevState) {
+    if (prevState.currentPage !== this.state.currentPage) {
+      this.search(this.state.value);
+    }
   }
 
   render() {
@@ -73,6 +89,16 @@ class App extends React.Component {
           </form>
         </div>
         <div className="events"> {this.state.events} </div>
+        <ReactPaginate
+          breakClassName={"break-me"}
+          pageCount={this.state.pageCount}
+          marginPagesDisplayed={2}
+          pageRangeDisplayed={5}
+          onPageChange={this.handlePageClick.bind(this)}
+          containerClassName={"pagination"}
+          subContainerClassName={"pages pagination"}
+          activeClassName={"active"}
+        />
       </div>
     );
   }
